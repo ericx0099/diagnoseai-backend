@@ -1,4 +1,4 @@
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from 'src/middleware/auth/auth.service';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const GetUser = createParamDecorator(

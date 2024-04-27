@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import * as jwt from 'jsonwebtoken';
 import { User } from './schema/users.schema';
 import { UsersModule } from './users.module';
 import { Model } from 'mongoose';
