@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 export type UserDocument = User & Document;
 
 @Schema({ timestamps: true })
-export class User {
+export class User extends Document{
   @Prop()
   name: string;
 
@@ -16,6 +16,7 @@ export class User {
 
   @Prop()
   google_id: number;
+
 }
 
 export const UsersSchema = SchemaFactory.createForClass(User);
