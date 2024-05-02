@@ -5,6 +5,7 @@ import RequestWithUser from 'src/types/request/RequestWithUser';
 import { ResponseService } from 'src/shared/response/response.service';
 import { Diagnosis, DiagnosisToFrontend } from './schema/diagnosis.schema';
 import { FlowiseService } from '../flowise/flowise.service';
+import { storeAnswerDto } from './dto/store-answer.dto';
 @Controller('diagnosis')
 export class DiagnosisController {
   constructor(
@@ -45,5 +46,19 @@ export class DiagnosisController {
     response.success = true,
     response.message = "diagnosis:fetched";
     return response;
+  }
+     
+  @Post(`/store-answer`)
+  async storeAnswer(@Request() req: RequestWithUser, @Body() body: storeAnswerDto){
+      const {answer, answer_uuid, diagnosis_uuid} = body;
+      const { user } = req;
+      const response = this.responseService.createResponse<boolean>();
+      response.message = "diagnosis:not_found";
+      const diagnosis = await this.diagnosisService.getDiagnosisByUuid(diagnosis_uuid);
+      
+      if((!diagnosis) || (! diagnosis.user_id == user.id)){
+        return response;
+      }
+      
   }
 }

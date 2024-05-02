@@ -14,10 +14,13 @@ export class FlowiseService {
             body: JSON.stringify({ question: initialSymptoms }),
         });
         const result = await response.json();
-
-        if (!(Array.isArray(result.json))) {
-            const diagnosisQuestions: string[] = result.json.split("\n");
-            return diagnosisQuestions;
+        //Sometimes FLOWISE doesnt return an array as expected.
+        if (result.json.length == 1) {
+            const diagnosisQuestions: string[] = result.json[0].split("\n");
+            if(diagnosisQuestions.length > result.json.length){
+                return diagnosisQuestions;
+            }
+            return result.json;
         } else {
             return result.json;
         }

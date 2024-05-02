@@ -47,3 +47,4 @@ export interface DiagnosisToFrontend {
   questions: DiagnosisQuestions[]
 }
 
+

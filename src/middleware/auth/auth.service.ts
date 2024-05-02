@@ -46,7 +46,7 @@ export class AuthService {
       const session = jwt.verify(cookie, process.env.NEXTAUTH_SECRET);
       return session;
     } catch (err) {
-      console.log(err);
+      Logger.error(err);
       return undefined;
     }
   }
