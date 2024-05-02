@@ -66,4 +66,11 @@ export class DiagnosisService {
     }
     return diagnosis;
   }
+  async updateOne(uuid: string, toUpdate: any) {
+    const result = await this.diagnosisModule.updateOne(
+      { uuid },
+      { ...toUpdate },
+    );
+    return result;
+  }
 }
