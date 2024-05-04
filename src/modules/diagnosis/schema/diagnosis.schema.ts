@@ -19,8 +19,31 @@ export class Diagnosis extends Document {
   @Prop()
   questions: DiagnosisQuestions[];
 
+  @Prop()
+  health_issue:string;
 
-  toFrontEnd: Function;
+  @Prop()
+  problem_description:string;
+
+  @Prop()
+  help_recomendations:string;
+
+  @Prop()
+  flowise_chat_id:string;
+
+  @Prop()
+  error: boolean;
+
+  @Prop()
+  error_message: string;
+
+  @Prop()
+  diagnosis_generated:boolean;
+
+  @Prop()
+  diagnosis_generation_date: Date
+
+  toFrontEnd: (Function);
 }
 export const DiagnosisSchema = SchemaFactory.createForClass(Diagnosis);
 

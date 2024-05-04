@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Diagnosis, DiagnosisQuestions } from './schema/diagnosis.schema';
+import {
+  Diagnosis,
+  DiagnosisDocument,
+  DiagnosisQuestions,
+} from './schema/diagnosis.schema';
 import { Model } from 'mongoose';
 import { v4 } from 'uuid';
 import { DiagnosisModule } from './diagnosis.module';
@@ -66,11 +70,28 @@ export class DiagnosisService {
     }
     return diagnosis;
   }
+
   async updateOne(uuid: string, toUpdate: any) {
     const result = await this.diagnosisModule.updateOne(
       { uuid },
       { ...toUpdate },
     );
     return result;
+  }
+
+  async fetchDiagnoses(user: User): Promise<Diagnosis[]> {
+    let diagnoses = undefined;
+    try {
+      diagnoses = await this.diagnosisModule
+        .find({ user_id: user.id })
+        .sort({ createdAt: -1 })
+        .exec();
+    } catch (err) {
+      Logger.debug(
+        'Error getting diagnose by user (fn fetchDiagnoses):' + user,
+      );
+    }
+
+    return diagnoses;
   }
 }
