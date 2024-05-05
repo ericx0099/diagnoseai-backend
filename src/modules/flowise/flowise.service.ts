@@ -55,7 +55,7 @@ export class FlowiseService {
       diagnosis_generated: true,
       diagnosis_generation_date: new Date()
     };
-
+    let textResult = "";
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -64,8 +64,10 @@ export class FlowiseService {
         },
         body: JSON.stringify({ question: JSON.stringify(formattedQuestions) }),
       });
+      const responseText = response;
+    //  textResult = await responseText.text();
       const result = await response.json();
-
+      
       Logger.debug(result);
       if (result.json) {
         const json = result.json;
@@ -85,7 +87,8 @@ export class FlowiseService {
       }
     } catch (err) {
       toReturn.error = true;
-      toReturn.error_message = err;
+      Logger.debug(err);
+      toReturn.error_message = textResult;
     }
 
     return toReturn;

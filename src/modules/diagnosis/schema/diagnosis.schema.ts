@@ -20,16 +20,16 @@ export class Diagnosis extends Document {
   questions: DiagnosisQuestions[];
 
   @Prop()
-  health_issue:string;
+  health_issue: string;
 
   @Prop()
-  problem_description:string;
+  problem_description: string;
 
   @Prop()
-  help_recomendations:string;
+  help_recomendations: string;
 
   @Prop()
-  flowise_chat_id:string;
+  flowise_chat_id: string;
 
   @Prop()
   error: boolean;
@@ -38,19 +38,30 @@ export class Diagnosis extends Document {
   error_message: string;
 
   @Prop()
-  diagnosis_generated:boolean;
+  diagnosis_generated: boolean;
 
   @Prop()
-  diagnosis_generation_date: Date
+  diagnosis_generation_date: Date;
 
-  toFrontEnd: (Function);
+  toFrontEnd: Function;
 }
 export const DiagnosisSchema = SchemaFactory.createForClass(Diagnosis);
 
-DiagnosisSchema.methods.toFrontEnd = function() : DiagnosisToFrontend {
-  const { uuid, symptoms, questions } = this.toObject();
-  return { uuid, symptoms, questions };
-}
+DiagnosisSchema.methods.toFrontEnd = function (): DiagnosisToFrontend {
+  const {
+    uuid,
+    symptoms,
+    questions,
+    diagnosis_generated,
+    health_issue,
+    help_recomendations,
+    problem_description,
+  } = this.toObject();
+  return { uuid, symptoms, questions,   diagnosis_generated,
+    health_issue,
+    help_recomendations,
+    problem_description, };
+};
 
 export class DiagnosisQuestions {
   @Prop()
@@ -63,11 +74,12 @@ export class DiagnosisQuestions {
   answer: string | null;
 }
 
-
 export interface DiagnosisToFrontend {
-  uuid:string;
+  uuid: string;
   symptoms: string;
-  questions: DiagnosisQuestions[]
+  questions: DiagnosisQuestions[];
+  diagnosis_generated:boolean;
+  health_issue:string;
+  help_recomendations:string;
+  problem_description:string;
 }
-
-

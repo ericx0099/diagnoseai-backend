@@ -128,6 +128,8 @@ export class DiagnosisController {
        //TODO::THIS USER HAS TOKENS TO PERFORM THIS ACTION??
     const diagnosisResults = await this.flowiseService.generateDiagnose(diagnosis);
     await this.diagnosisService.updateOne(diagnosis.uuid, diagnosisResults);
-
+    response.success= true;
+    response.message= "diagnosis:generated";
+    return response;
   }
 }
