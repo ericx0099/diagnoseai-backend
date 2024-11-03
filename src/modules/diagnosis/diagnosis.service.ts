@@ -13,7 +13,7 @@ import { User } from '../users/schema/users.schema';
 export class DiagnosisService {
   constructor(
     @InjectModel(Diagnosis.name)
-    private diagnosisModule: Model<DiagnosisModule>,
+    private diagnosisModule: Model<DiagnosisDocument>,
   ) {}
 
   async create(symptoms: string, user: User): Promise<Diagnosis | null> {
@@ -83,7 +83,7 @@ export class DiagnosisService {
     let diagnoses = undefined;
     try {
       diagnoses = await this.diagnosisModule
-        .find({ user_id: user.id })
+        .find({ user_id: user._id })
         .sort({ createdAt: -1 })
         .exec();
     } catch (err) {
@@ -94,4 +94,5 @@ export class DiagnosisService {
 
     return diagnoses;
   }
+  
 }

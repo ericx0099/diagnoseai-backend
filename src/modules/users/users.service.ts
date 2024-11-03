@@ -13,6 +13,7 @@ export class UsersService {
 
     try {
       user = await this.userModule.findOne({ email });
+    
     } catch (error) {
       console.log('error', error);
     }
@@ -20,7 +21,7 @@ export class UsersService {
   }
   async createFromGoogle(_user: registerUserDTO) {
     let user = undefined;
-
+    //TODO::BY DEFAULT GET EN LANGUAGE
     try {
       user = await this.userModule.create(_user);
     } catch (err) {}
@@ -29,5 +30,12 @@ export class UsersService {
 
   test() {
     return 'test';
+  }
+  async updateUserLanguage(userId: string, languageId: string): Promise<User> {
+    return this.userModule.findByIdAndUpdate(
+      userId,
+      { language: languageId },
+      { new: true }
+    );
   }
 }

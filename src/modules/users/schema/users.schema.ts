@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { Language } from 'src/modules/languages/schema/language.schema';
 
 export type UserDocument = User & Document;
 
@@ -16,6 +17,9 @@ export class User extends Document{
 
   @Prop()
   google_id: number;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Language.name })
+  language: Language;
 
 }
 

@@ -10,12 +10,14 @@ import {
 } from './schema/diagnosis.schema';
 import { FlowiseService } from '../flowise/flowise.service';
 import { storeAnswerDto } from './dto/store-answer.dto';
+import { LanguageService } from '../languages/language.service';
 @Controller('diagnosis')
 export class DiagnosisController {
   constructor(
     private diagnosisService: DiagnosisService,
     private responseService: ResponseService,
     private flowiseService: FlowiseService,
+    private languageService: LanguageService,
   ) {}
 
   @Get()
@@ -48,7 +50,15 @@ export class DiagnosisController {
     response.message = 'diagnosis:not_created';
     if (created) {
       //TODO::THIS USER CAN PERFORM THIS ACTION BY TOKENS?
-      let listOfQuestions = await this.flowiseService.getQuestions(symptoms);
+      const lang = await this.languageService.findOne({
+        _id: user.language,
+      });
+
+      const languageString = `.My language is ${lang.english_name}`;
+      const updatedSymptoms = symptoms + "  " + languageString;
+
+      let listOfQuestions = await this.flowiseService.getQuestions(updatedSymptoms);
+
       const updatedDiagnosis =
         await this.diagnosisService.addQuestionsToDiagnosis(
           created,
@@ -118,18 +128,21 @@ export class DiagnosisController {
     const { user } = req;
     const response = this.responseService.createResponse<boolean>();
     response.message = 'diagnosis:not_found';
-    const diagnosis =
-      await this.diagnosisService.getDiagnosisByUuid(uuid);
+    const diagnosis = await this.diagnosisService.getDiagnosisByUuid(uuid);
 
     if (!diagnosis || !diagnosis.user_id == user.id) {
       return response;
     }
-       //TODO::THIS DIAGNOSIS HAS BEEN ALREADY EXECUTEd?
-       //TODO::THIS USER HAS TOKENS TO PERFORM THIS ACTION??
-    const diagnosisResults = await this.flowiseService.generateDiagnose(diagnosis);
+    const lang = await this.languageService.findOne({
+      _id: user.language,
+    });
+    //TODO::THIS DIAGNOSIS HAS BEEN ALREADY EXECUTEd?
+    //TODO::THIS USER HAS TOKENS TO PERFORM THIS ACTION??
+    const diagnosisResults =
+      await this.flowiseService.generateDiagnose(diagnosis, lang);
     await this.diagnosisService.updateOne(diagnosis.uuid, diagnosisResults);
-    response.success= true;
-    response.message= "diagnosis:generated";
+    response.success = true;
+    response.message = 'diagnosis:generated';
     return response;
   }
 }

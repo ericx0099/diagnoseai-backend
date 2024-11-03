@@ -3,7 +3,7 @@ import {
   Diagnosis,
   DiagnosisQuestions,
 } from '../diagnosis/schema/diagnosis.schema';
-import { v4 } from 'uuid';
+import { Language } from '../languages/schema/language.schema';
 @Injectable()
 export class FlowiseService {
   async getQuestions(initialSymptoms: string): Promise<string[]> {
@@ -19,22 +19,30 @@ export class FlowiseService {
     const result = await response.json();
 
     //Sometimes FLOWISE doesnt return an array as expected.
-    if (result.json.length == 1) {
+    let questions = null;
+    if (! (result.json.length > 1 )) {
       const diagnosisQuestions: string[] = result.json[0].split('\n');
-      if (diagnosisQuestions.length > result.json.length) {
-        return diagnosisQuestions;
-      }
-      return result.json;
+      questions = diagnosisQuestions;
     } else {
-      return result.json;
+      questions = result.json;
     }
+    if (questions.length > 0 && Array.isArray(questions)) {
+      if (questions[questions.length - 1].slice(-1) !== '?') {
+       // questions = questions.pop();
+      }
+    }
+    return questions;
   }
-  async generateDiagnose(diagnosis: Diagnosis) {
+  async generateDiagnose(diagnosis: Diagnosis, lang: Language) {
     const endpoint = process.env.FLOWISE_DIAGNOSE_ENDPOINT;
 
     const initialSymptoms = {
       question: 'What are your symptoms?',
       answer: diagnosis.symptoms,
+    };
+    const languageQuestion = {
+      question: "In what languge do you want the AI to generate text?",
+      answer: lang.english_name
     };
 
     const formattedQuestions = diagnosis.questions.map(
@@ -43,6 +51,7 @@ export class FlowiseService {
       },
     );
 
+    formattedQuestions.unshift(languageQuestion);
     formattedQuestions.unshift(initialSymptoms);
 
     const toReturn = {
@@ -53,9 +62,9 @@ export class FlowiseService {
       error: false,
       error_message: '',
       diagnosis_generated: true,
-      diagnosis_generation_date: new Date()
+      diagnosis_generation_date: new Date(),
     };
-    let textResult = "";
+    let textResult = '';
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -64,10 +73,10 @@ export class FlowiseService {
         },
         body: JSON.stringify({ question: JSON.stringify(formattedQuestions) }),
       });
-      const responseText = response;
-    //  textResult = await responseText.text();
+      //const responseText = response;
+      //  textResult = await responseText.text();
       const result = await response.json();
-      
+
       Logger.debug(result);
       if (result.json) {
         const json = result.json;
@@ -80,7 +89,6 @@ export class FlowiseService {
         if (json.help_recomendations) {
           toReturn.help_recomendations = json.help_recomendations;
         }
-      
       }
       if (result.chatId) {
         toReturn.flowise_chat_id = result.chatId;

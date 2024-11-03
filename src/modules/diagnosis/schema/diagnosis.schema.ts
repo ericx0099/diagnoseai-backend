@@ -56,11 +56,21 @@ DiagnosisSchema.methods.toFrontEnd = function (): DiagnosisToFrontend {
     health_issue,
     help_recomendations,
     problem_description,
+    createdAt
   } = this.toObject();
-  return { uuid, symptoms, questions,   diagnosis_generated,
+
+
+
+  return {
+    uuid,
+    symptoms,
+    questions,
+    diagnosis_generated,
     health_issue,
     help_recomendations,
-    problem_description, };
+    problem_description,
+    created_at: createdAt
+  };
 };
 
 export class DiagnosisQuestions {
@@ -78,8 +88,9 @@ export interface DiagnosisToFrontend {
   uuid: string;
   symptoms: string;
   questions: DiagnosisQuestions[];
-  diagnosis_generated:boolean;
-  health_issue:string;
-  help_recomendations:string;
-  problem_description:string;
+  diagnosis_generated: boolean;
+  health_issue: string;
+  help_recomendations: string;
+  problem_description: string;
+  created_at: Date
 }
