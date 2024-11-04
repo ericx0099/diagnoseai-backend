@@ -59,6 +59,9 @@ export class PaymentsController {
         //CREATE USER ?
         return false;
       }
+
+      await this.usersService.storeStripeCustomerId(invoice.customer_email, invoice.customer);
+
       const paymentData = {
         stripeInvoiceId: invoice.id,
         stripeCustomerId: invoice.customer,
@@ -95,6 +98,8 @@ export class PaymentsController {
           status: subscription.status,
         };
         await this.paymentsService.storeSubscription(subscriptionData);
+        await this.paymentsService.giveAccess(priceId, user);
+
       }
     }
   }
@@ -111,6 +116,8 @@ export class PaymentsController {
     }
     return response;
   }
+
+
 
 
 }

@@ -38,4 +38,17 @@ export class UsersService {
       { new: true }
     );
   }
+  async updateUser(userId: string, updateData: any): Promise<User> {
+    return this.userModule.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    );
+  }
+
+  async storeStripeCustomerId(user_email: string, stripeCustomerId: string){
+    let user = await this.findUserByEmail(user_email);
+    const toUpdate = {stripeCustomerId};
+    this.updateUser(user._id,toUpdate);
+  }
 }

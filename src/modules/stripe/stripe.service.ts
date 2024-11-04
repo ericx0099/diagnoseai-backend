@@ -30,9 +30,7 @@ export class StripeService {
 
   public async  getSuscriptionById(subscriptionId: string) {
     try {
-      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
-      console.log("Items:", subscription.items.data);
-  
+      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);  
       return subscription; 
     } catch (error) {
       console.error("Error al obtener la suscripción:", error);
@@ -46,7 +44,7 @@ export class StripeService {
       customer_email: email,
       line_items: [
         {
-          price: priceId, // Usando el ID de precio del producto específico
+          price: priceId,
           quantity: 1,
         },
       ],

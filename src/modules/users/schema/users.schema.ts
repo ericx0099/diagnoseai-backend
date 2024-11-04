@@ -21,6 +21,16 @@ export class User extends Document{
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Language.name })
   language: Language;
 
+  @Prop()
+  stripeCustomerId: string | undefined;
+
+  @Prop({default: 0})
+  diagnoses: number
+
+  
+  @Prop({default: 0})
+  aiTokens: number
+
 }
 
 export const UsersSchema = SchemaFactory.createForClass(User);
