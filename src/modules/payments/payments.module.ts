@@ -7,6 +7,8 @@ import { PaymentsService } from './payments.service';
 import { Payment, PaymentSchema } from './schema/payment.schema';
 import { Subscription, SubscriptionSchema } from './schema/suscription.schema';
 import { UsersService } from '../users/users.service';
+import { HasAuthMiddleware } from 'src/middleware/auth/has-auth.middleware';
+import { ResponseService } from 'src/shared/response/response.service';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UsersSchema }]),
@@ -14,6 +16,14 @@ import { UsersService } from '../users/users.service';
     MongooseModule.forFeature([{ name: Subscription.name, schema: SubscriptionSchema }]),
   ],
   controllers: [PaymentsController],
-  providers: [StripeService, PaymentsService, UsersService],
+  providers: [StripeService, PaymentsService, UsersService, ResponseService],
 })
-export class PaymentsModule {}
+export class PaymentsModule {
+  /*
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(HasAuthMiddleware)
+      .forRoutes({ path: 'payments/create-stripe-session', method: RequestMethod.ALL });
+  }
+      */
+}

@@ -39,5 +39,21 @@ export class StripeService {
       throw error; 
     }
   }
+
+  async createCheckoutSession(email: string, priceId: string) {
+    return await this.stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      customer_email: email,
+      line_items: [
+        {
+          price: priceId, // Usando el ID de precio del producto específico
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: process.env.FRONTEND_URL+"/my-diagnoses",
+      cancel_url: process.env.FRONTEND_URL+"/profile",
+    });
+  }
  
 }

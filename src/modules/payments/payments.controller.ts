@@ -11,6 +11,8 @@ import Stripe from 'stripe';
 import { StripeService } from '../stripe/stripe.service';
 import { PaymentsService } from './payments.service';
 import { UsersService } from '../users/users.service';
+import RequestWithUser from 'src/types/request/RequestWithUser';
+import { ResponseService } from 'src/shared/response/response.service';
 
 @Controller('payments')
 export class PaymentsController {
@@ -20,6 +22,7 @@ export class PaymentsController {
     private stripeService: StripeService,
     private paymentsService: PaymentsService,
     private usersService: UsersService,
+    private responseService: ResponseService,
   ) {}
 
   @Post('/succeed')
@@ -47,11 +50,12 @@ export class PaymentsController {
     const eventType = event.type;
     if (eventType == 'invoice.payment_succeeded') {
       const { object: invoice } = data;
-        console.log(invoice)
       //const session = await this.stripeService.retrieveSession(object.id);
       const priceId = this.paymentsService.extractPaymentIdFromInvoice(invoice);
-      const user = await this.usersService.findUserByEmail(invoice.customer_email);
-      if(!user){
+      const user = await this.usersService.findUserByEmail(
+        invoice.customer_email,
+      );
+      if (!user) {
         //CREATE USER ?
         return false;
       }
@@ -90,12 +94,23 @@ export class PaymentsController {
           userId: user._id,
           status: subscription.status,
         };
-        await this.paymentsService.storeSubscription(subscriptionData)
-
-
+        await this.paymentsService.storeSubscription(subscriptionData);
       }
-
-  
     }
   }
+
+  @Post("/create-checkout-session")
+  async createCheckoutSession(@Body() body: any){
+    const { email, priceId } = body;
+    const session = await this.stripeService.createCheckoutSession(email, priceId);
+    const response = this.responseService.createResponse<string>();
+    if(session.url){
+        response.data = session.url;
+        response.success = true;
+        response.message = "plans:url_generated";
+    }
+    return response;
+  }
+
+
 }
