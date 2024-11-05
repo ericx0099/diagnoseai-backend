@@ -12,7 +12,6 @@ export class HasAuthMiddleware implements NestMiddleware {
       const session = this.authService.getSession(req);
       if (session) {
         const userD = await this.usersService.findUserByEmail(session.email);
-    
         (req as any).user = userD; // Add user to the request if the session is valid
         next(); // Continue to the next middleware/controller with the user
       } else {

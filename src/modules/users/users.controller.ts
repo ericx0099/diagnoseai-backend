@@ -21,7 +21,7 @@ export class UsersController {
   constructor(
     private usersService: UsersService,
     private languageService: LanguageService,
-    private responseService: ResponseService
+    private responseService: ResponseService,
   ) {}
 
   @Get('test')
@@ -31,7 +31,7 @@ export class UsersController {
     const { email } = user;
     const attemptToFindUser = await this.usersService.findUserByEmail(email);
     if (!attemptToFindUser) {
-     await this.usersService.createFromGoogle(user);
+      await this.usersService.createFromGoogle(user);
     }
   }
 
@@ -45,28 +45,39 @@ export class UsersController {
     const { user } = req;
     const response = this.responseService.createResponse<boolean>();
     user.language = language._id;
- 
+
     await this.usersService.updateUserLanguage(user._id, language._id);
     response.data = true;
     response.success = true;
-    response.message ="users:config_updated";
+    response.message = 'users:config_updated';
     return response;
- //   await user.replaceOne({_id:user.id}, {...user})
+    //   await user.replaceOne({_id:user.id}, {...user})
   }
   @Post('get-user-language')
-  async getUserLanguage(@Body() body: emailDTO){
-    const {email } = body;
+  async getUserLanguage(@Body() body: emailDTO) {
+    const { email } = body;
     const response = this.responseService.createResponse<string>();
 
-
     const attemptToFindUser = await this.usersService.findUserByEmail(email);
-    if(attemptToFindUser){
-        const userPopulated = await attemptToFindUser.populate('language');
-        response.data = userPopulated.language.code;
-        response.success=true;
+    if (attemptToFindUser) {
+      const userPopulated = await attemptToFindUser.populate('language');
+      response.data = userPopulated.language.code;
+      response.success = true;
     }
 
     return response;
-  
+  }
+
+  @Get('me')
+  async getMyInfo(@Request() req: RequestWithUser) {
+    const { user } = req;
+    const response = this.responseService.createResponse<any>();
+    response.data = {
+      diagnoses: user.diagnoses,
+      aiTokens: user.aiTokens,
+    };
+    response.success = true;
+    response.message = 'users:me_fetched';
+    return response;
   }
 }

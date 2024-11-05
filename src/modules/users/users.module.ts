@@ -28,5 +28,7 @@ import { ResponseService } from 'src/shared/response/response.service';
 export class UsersModule {  configure(consumer: MiddlewareConsumer) {
   consumer
     .apply(HasAuthMiddleware)
-    .forRoutes({ path: 'users/update-configuration', method: RequestMethod.POST });
+    .forRoutes({ path: 'users/update-configuration', method: RequestMethod.POST },
+      {path:"users/get-user-language", method: RequestMethod.POST}
+    );
 }}

@@ -11,6 +11,7 @@ import {
 import { FlowiseService } from '../flowise/flowise.service';
 import { storeAnswerDto } from './dto/store-answer.dto';
 import { LanguageService } from '../languages/language.service';
+import { UsersService } from '../users/users.service';
 @Controller('diagnosis')
 export class DiagnosisController {
   constructor(
@@ -18,6 +19,7 @@ export class DiagnosisController {
     private responseService: ResponseService,
     private flowiseService: FlowiseService,
     private languageService: LanguageService,
+    private usersService: UsersService
   ) {}
 
   @Get()
@@ -46,6 +48,10 @@ export class DiagnosisController {
     const { symptoms } = diagnosisBody;
     const { user } = req;
     const response = this.responseService.createResponse<DiagnosisToFrontend>();
+    if(! (user.diagnoses > 0)) {
+      response.message = "diagnosis:no_diagnosis_available";
+      return response;
+    }
     const created = await this.diagnosisService.create(symptoms, user);
     response.message = 'diagnosis:not_created';
     if (created) {
@@ -67,6 +73,7 @@ export class DiagnosisController {
       response.success = true;
       response.message = 'diagnosis:created';
       response.data = updatedDiagnosis.toFrontEnd();
+      await this.usersService.updateUser(user._id, {diagnoses: user.diagnoses - 1});
     }
     return response;
   }
