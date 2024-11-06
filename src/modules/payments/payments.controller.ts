@@ -5,6 +5,7 @@ import {
   Logger,
   Request,
   Headers,
+  Get,
 } from '@nestjs/common';
 import { sign } from 'crypto';
 import Stripe from 'stripe';
@@ -13,6 +14,7 @@ import { PaymentsService } from './payments.service';
 import { UsersService } from '../users/users.service';
 import RequestWithUser from 'src/types/request/RequestWithUser';
 import { ResponseService } from 'src/shared/response/response.service';
+import { Payment } from './schema/payment.schema';
 
 @Controller('payments')
 export class PaymentsController {
@@ -116,6 +118,31 @@ export class PaymentsController {
     }
     return response;
   }
+  @Get("/portal-link")
+  async generateCustomerPortalSession(@Request() req: RequestWithUser){
+    const response = this.responseService.createResponse<string>();
+    response.message = 'plan:portal_link_not_generated';
+    const {user} = req;
+    if(user.stripeCustomerId){
+      const link = await this.stripeService.createCustomerPortalSession(user.stripeCustomerId,`${process.env.FRONTEND_URL}/profile`);
+      response.data = link;
+      response.success = true;
+      response.message = "";
+    }
+    return response;
+  }
+
+  @Get("/")
+  async getMyPayments(@Request() req: RequestWithUser){
+    const {user} = req;
+    const payments = await this.paymentsService.getUserPayments(user);
+    const response = this.responseService.createResponse<Payment[]>();
+    response.data = payments;
+    response.success = true;
+    response.message = "payments:payments_fetched";
+    return response;
+  }
+
 
 
 

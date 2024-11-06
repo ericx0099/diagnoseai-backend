@@ -47,6 +47,7 @@ export class AuthService {
       return session;
     } catch (err) {
       Logger.error(err);
+      Logger.error(token)
       return undefined;
     }
   }

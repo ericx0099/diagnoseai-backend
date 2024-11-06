@@ -24,7 +24,9 @@ export class PaymentsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(HasAuthMiddleware)
-      .forRoutes({ path: 'payments/create-checkout-session', method: RequestMethod.POST });
+      .forRoutes({ path: 'payments/create-checkout-session', method: RequestMethod.POST },
+        { path: 'payments/portal-link', method: RequestMethod.GET }
+      );
   }
       
 }

@@ -86,8 +86,30 @@ export class PaymentsService {
     const toUpdate = {diagnoses, aiTokens};
 
     await this.usersService.updateUser(user._id, toUpdate);
+  }
 
+  async getUserPayments(user: User) :  Promise<Payment[]>{
+    const payments = await this.paymentModule.find({userId: user._id}).sort({'createdAt':-1}).exec();
+    return payments;
+  }
+  async filterSubscriptions(filters: Record<string, any>) {
+    try {
+      // Usamos el método find() de Mongoose, que permite pasar un objeto de filtros
+      const subscriptions = await this.subscriptionModule.find(filters).exec();
 
+      return subscriptions;
+    } catch (error) {
+      throw new Error('Error al filtrar las suscripciones: ' + error.message);
+    }
+  }
+  async getUserActiveSuscription(filters: Record<string, any>){
+    try {
+      // Usamos el método find() de Mongoose, que permite pasar un objeto de filtros
+      const subscription = await this.subscriptionModule.findOne(filters).exec();
 
+      return subscription;
+    } catch (error) {
+      throw new Error('Error al filtrar las suscripciones: ' + error.message);
+    }
   }
 }

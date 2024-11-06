@@ -49,9 +49,23 @@ export class StripeService {
         },
       ],
       mode: 'subscription',
-      success_url: process.env.FRONTEND_URL+"/my-diagnoses",
-      cancel_url: process.env.FRONTEND_URL+"/profile",
+      success_url: process.env.FRONTEND_URL+"/my-diagnoses?plan_purchased="+priceId,
+      cancel_url: process.env.FRONTEND_URL+"/profile?plan_cancelled=true",
     });
   }
+
+  async createCustomerPortalSession(customerId: string, returnUrl: string) {
+    try {
+      const session = await this.stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: returnUrl,
+      });
+      return session.url;
+    } catch (error) {
+      console.error("Error creating customer portal session:", error);
+      throw error;
+    }
+  }
+
  
 }

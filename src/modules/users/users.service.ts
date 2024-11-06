@@ -12,7 +12,7 @@ export class UsersService {
     let user = undefined;
 
     try {
-      user = await this.userModule.findOne({ email });
+      user = (await this.userModule.findOne({ email })).populate('language');
     
     } catch (error) {
       console.log('error', error);

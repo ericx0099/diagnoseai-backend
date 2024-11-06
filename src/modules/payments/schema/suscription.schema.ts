@@ -23,6 +23,8 @@ export class Subscription extends Document {
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date; // Fecha de creación
+
+
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
